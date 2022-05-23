@@ -1,4 +1,6 @@
-$(document).ready(function(){
+$(document).ready(function() {
+
+	//var console = chrome.extension.getBackgroundPage().console;
 	var blobs = recordedBlobs;
 	var player;
 	var trimslider = document.getElementById('trimslider');
@@ -19,7 +21,6 @@ $(document).ready(function(){
 	$("#video").attr("src", url);
 	$("#g-savetodrive").attr("src", url);
 	$("#format-select").niceSelect();
-	
 	
 	// Convert seconds to timestamp
 	function timestamp(value) {
@@ -152,7 +153,7 @@ $(document).ready(function(){
 					convertStreams(superBuffer, "gif");
 			}
 	}
-	
+
 	// Save on Drive
 	function saveDrive() {
 			downloaded = true;
@@ -160,8 +161,8 @@ $(document).ready(function(){
 					if (!token) {
 						return;
 					}
-					$("#share span").html(chrome.i18n.getMessage("saving"));
-					$("#share").css("pointer-events", "none");
+					$("#jira span").html(chrome.i18n.getMessage("saving"));
+					$("#jira").css("pointer-events", "none");
 					var metadata = {
 							name: 'video.mp4',
 							mimeType: 'video/mp4'
@@ -180,8 +181,8 @@ $(document).ready(function(){
 					xhr.responseType = 'json';
 					xhr.onload = () => {
 							var fileId = xhr.response.id;
-							$("#share span").html("Save to Drive");
-							$("#share").css("pointer-events", "all");
+							$("#jira span").html("Save to Jira");
+							$("#jira").css("pointer-events", "all");
 							
 							// Open file in Drive in a new tab
 							chrome.tabs.create({
@@ -242,15 +243,39 @@ $(document).ready(function(){
 	$("#download").on("click", function(){
 			download();
 	});
-	
-	// Save on Drive
-	$("#share").on("click", function(){
-			saveDrive();
-	});
+	// JIRA
+	try {
+		//const containerJira = document.querySelector('#service\\:jira');
+		const props = {
+			id: ServiceConstants.JIRA,
+			startIcon: "../assets/images/editor/jira2.svg",
+			label: "SHARE ON JIRA",
+			//endIcon: "../assets/images/editor/jira2.svg",
+			list: listJira,
+			upload: ({ accessToken, itemID }) => uploadJira({ accessToken, itemID, blobs })
+		};
+		ReactDOM.render(el(ShareButton, props), document.querySelector(`#service\\:${ ServiceConstants.JIRA }`));
+	} catch(error) {
+		console.error(error);
+	};
+	// SLACK
+	try {
+		const props = {
+			id: ServiceConstants.SLACK,
+			startIcon: "../assets/images/editor/Slack_Mark.svg",
+			label: "SHARE ON SLACK",
+			list: listSlack,
+			upload: ({ accessToken, itemID }) => uploadSlack({ accessToken, itemID, blobs })
+		};
+		ReactDOM.render(el(ShareButton, props), document.querySelector(`#service\\:${ ServiceConstants.SLACK}`));
+	} catch(error) {
+		console.error(error);
+	};
 	
 	// Revert changes made to the video
 	$("#reset").on("click", function(){
-			reset();
+			console.log('foo');
+			//reset();
 	});
 	
 	// For mobile version
@@ -261,7 +286,7 @@ $(document).ready(function(){
 	
 	// Localization (strings in different languages)
 	$("#made-with").html(chrome.i18n.getMessage("made_with"));
-	$("#by-alyssa").html(chrome.i18n.getMessage("by_alyssa"));
+	$("#by-hikeon2").html(chrome.i18n.getMessage("by_hikeon"));
 	$("#rate-label").html(chrome.i18n.getMessage("rate_extension"));
 	$("#show-hide").html(chrome.i18n.getMessage("show_hide"));
 	$("#edit-label").html(chrome.i18n.getMessage("edit_recording"));
@@ -277,6 +302,6 @@ $(document).ready(function(){
 	$("#apply-remove").html(chrome.i18n.getMessage("apply"));
 	$("#reset").html(chrome.i18n.getMessage("reset"));
 	$("#download-label").html(chrome.i18n.getMessage("download"));
-	$("#share span").html(chrome.i18n.getMessage("save_drive"));
+	$("#jira span").html(chrome.i18n.getMessage("share_jira"));
 	$("#apply-trim").html(chrome.i18n.getMessage("apply"));
 });

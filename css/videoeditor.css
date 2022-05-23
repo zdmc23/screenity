@@ -101,7 +101,7 @@ label {
     width: 175px;
     text-align: center;
     border-radius: 5px;
-    color: #2D89F4!important;
+    color: #008f87 !important;
     line-height: 47px;
     margin-right: 30px!important;
 }
@@ -183,7 +183,7 @@ h2 {
     width: 45%;
     height: 47px;
     border-radius: 5px;
-    background-color: #2D89F4;
+    background-color: #008f87;
     vertical-align: middle;
     display: inline-block;
     text-align: center;
@@ -193,7 +193,7 @@ h2 {
     color: #FFF;
     transition: all .25s cubic-bezier(.05,.03,.35,1);
 }
-#share {
+.share {
     width: 50%;
     height: 47px;
     margin-left: 2%;
@@ -208,11 +208,11 @@ h2 {
     color: #69708A;
     transition: all .25s cubic-bezier(.05,.03,.35,1);
 }
-#download:hover, #share:hover {
+#download:hover, .share:hover {
     opacity: .7;
     cursor: pointer;
 }
-#download img, #share img {
+#download img, .share img {
     vertical-align: middle;
     display: inline-block;
     margin-right: 5px;
@@ -233,7 +233,7 @@ h2 {
 .plyr {
     height: auto;
     width: 90%;
-    --plyr-color-main: #2D89F4;
+    --plyr-color-main: #008f87;
     display: inline-block;
     text-align: center;
     top: 50%;
@@ -268,7 +268,7 @@ h2 {
     font-size: 15px;
 }
 #apply-trim, #apply-remove{
-    background: #2D89F4;
+    background: #008f87;
     border-radius: 5px;
     color: #FFF;
     font-family: Roboto;
@@ -293,7 +293,7 @@ h2 {
     margin-top: 30px;
 }
 #reset {
-    color: #2D89F4;
+    color: #008f87;
     font-family: Roboto;
     font-size: 14px;
     margin-top: 20px;

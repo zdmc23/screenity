@@ -81,7 +81,7 @@ function newRecording(stream) {
 function saveRecording(url, blobs) {
     newwindow = window.open('../html/videoeditor.html');
     newwindow.url = url;
-		newwindow.recordedBlobs = blobs;
+    newwindow.recordedBlobs = blobs;
 }
 
 // Stop recording
@@ -237,11 +237,11 @@ function getTab() {
         		readable.pipeTo(streamSaver.createWriteStream('screenity.webm'));
 
             // Record tab stream
-						var recordedBlobs = [];
+            var recordedBlobs = [];
             mediaRecorder.ondataavailable = event => {
                 if (event.data && event.data.size > 0) {
-										writer.write(event.data);
-										recordedBlobs.push(event.data);
+                    writer.write(event.data);
+                    recordedBlobs.push(event.data);
                 }
             };
 
@@ -694,6 +694,39 @@ chrome.commands.onCommand.addListener(function(command) {
     }
 });
 
+const handler = async({ clientID, redirectURL, responseURL, service }) => {
+    // TODO: generate and check state
+    if (!service) return null;
+    switch (service) {
+        case ServiceConstants.JIRA:
+            if (responseURL) return handleCallbackJira({ clientID, redirectURL, responseURL });
+            if (redirectURL) return getAuthURLJira({ clientID, redirectURL });
+        case ServiceConstants.SLACK:
+            if (responseURL) return handleCallbackSlack({ clientID, redirectURL, responseURL });
+            if (redirectURL) return getAuthURLSlack({ clientID, redirectURL });
+        case ServiceConstants.GOOGLE:
+        default:
+            return null;
+    };
+};
+
+const authorize = async({ clientID, service, sendResponse } = {}) => {
+    try {
+        const redirectURL = chrome.identity.getRedirectURL();
+        const url = await handler({ clientID, redirectURL, service });
+        return chrome.identity.launchWebAuthFlow({
+            interactive: true,
+            url
+        },
+        async(responseURL) => {
+            const token = await handler({ clientID, redirectURL, responseURL, service });
+            sendResponse({ token });
+        });
+    } catch (e) {
+        console.log(`Error: ${e}`);
+    };
+};
+
 // Listen for messages from content / popup
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -774,9 +807,9 @@ chrome.runtime.onMessage.addListener(
                     type: "end-recording"
                 });
             });
-						if (!request.cancel) {
-							saveRecording("", request.blobs);
-						} 
+            if (!request.cancel) {
+                saveRecording("", request.blobs);
+            }
         } else if (request.type == "sources-loaded") {
             pageUpdated(sender);
         } else if (request.type == "camera-size") {
@@ -785,11 +818,33 @@ chrome.runtime.onMessage.addListener(
             camerapos.x = request.x;
             camerapos.y = request.y;
         } else if (request.type == "test") {
-					chrome.tabs.getSelected(null, function(tab) {
-						chrome.tabs.sendMessage(tab.id, {
-								type: "hello"
-						});
-				});
-				}
+            chrome.tabs.getSelected(null, function(tab) {
+                chrome.tabs.sendMessage(tab.id, {
+                    type: "hello"
+                });
+            });
+        } else if (request.type == "debug-jira") {
+            /*
+            newwindow = window.open('../html/videoeditor.html');
+            newwindow.url = '';
+            newwindow.recordedBlobs = [];
+            */
+        } else if (request.type == ServiceConstants.JIRA) {
+            /*
+            "tabs is not defined"
+            chrome.tabs.executeScript(tabs[index].id, {
+                file: './js/services/jira.js'
+            });
+            */
+            // TODO: read from options/storage
+            const clientID = "redacted";
+            authorize({ clientID, service: ServiceConstants.JIRA, sendResponse });
+            return true;
+        } else if (request.type == ServiceConstants.SLACK) {
+            // TODO: read from options/storage
+            const clientID = "redacted";
+            authorize({ clientID, service: ServiceConstants.SLACK, sendResponse });
+            return true;
+        }
     }
 );

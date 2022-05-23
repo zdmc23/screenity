@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    // TODO: remove
+    chrome.runtime.sendMessage({type: "debug-jira"});
     var recording = false;
     
     // Set up custom dropdowns
