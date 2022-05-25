@@ -189,17 +189,17 @@ const uploadSlack = async({ accessToken, itemID, blobs }) => {
     return null;
   };
   let filename = null;
-  const displayName = await _getIdentity({ accessToken });
-  if (!displayName) {
-    console.error("ERROR: Missing Display Name!");
-    return null;
-  };
+  const displayName = null;
+  //const displayName = await _getIdentity({ accessToken });
+  //if (!displayName) {
+  //  console.error("ERROR: Missing Display Name!");
+  //  return null;
+  //};
   const timestamp = _getTimestamp();
   filename = displayName ? `${displayName.replace(' ','')}${timestamp}` : timestamp;
-  console.log("filename:", filename);
-  // TODO
-  //const res = await _uploadFile({ accessToken, itemID, filename, blobs });
-  //return res.json();
+  //console.log("filename:", filename);
+  const res = await _uploadFile({ accessToken, itemID, filename, blobs });
+  return res.json();
 };
 
 /**
@@ -214,7 +214,7 @@ const listSlack = async({ accessToken }) => {
   };
   const res = await _listChannels({ accessToken });
   const data = await res.json();
-  console.log("data:", data);
+  //console.log("data:", data);
   const options = data?.channels?.map(channel => {
     let name = channel?.name;
     if (name?.length > 35) name = name.substring(0, 35) + "...";
@@ -224,6 +224,6 @@ const listSlack = async({ accessToken }) => {
       label: name,
     };
   });
-  console.log("options:", options);
+  //console.log("options:", options);
   return options;
 };

@@ -6,7 +6,7 @@ const Text = ({ text }) => el('div', null, text);
 
 const Select = ({ options, onSelect }) => {
   const onChange = (evt) => onSelect(evt.target.value);
-  return el('select', { onChange },
+  return el('select', { onChange, style: styles.select },
     options.map(({ key, value, label }) => el('option', { key, value },
       value === label ? label : `${value} - ${label}`))
   );
@@ -32,6 +32,11 @@ const styles = {
     fontWeight: 'bold',
     paddingLeft: 15,
     paddingRight: 15
+  },
+  select: {
+    marginTop: 5,
+    marginBottom: 5,
+    width: '100%'
   }
 };
 
